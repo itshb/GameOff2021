@@ -1,0 +1,10 @@
+*.sln
+*.vs/
+*.sdf
+*.suo
+Binaries/*
+Build/*
+Saved/*
+Intermediate/*
+DerivedDataCache/*
+Packaged Build/*
