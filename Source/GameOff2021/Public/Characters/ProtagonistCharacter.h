@@ -4,10 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Character.h"
+#include "Interfaces/DamageableInterface.h"
 #include "ProtagonistCharacter.generated.h"
 
 UCLASS()
-class GAMEOFF2021_API AProtagonistCharacter : public ACharacter {
+class GAMEOFF2021_API AProtagonistCharacter : public ACharacter, public IDamageableInterface {
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
@@ -16,7 +17,30 @@ class GAMEOFF2021_API AProtagonistCharacter : public ACharacter {
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	class UAttributesComponent* Attributes;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
+	class USceneComponent* ProjectileSpawnLocation;
+
+	bool bPressedInteract;
+
+	bool bSneaking;
+
+	bool bEvading;
+
+	bool bCrouching;
+
+	bool bPrimaryAttacking;
+
+	bool bSecondaryAttacking;
+
+	bool bTertiaryAttacking;
+
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Attributes", meta = (ClampMin = "1"))
+	int32 MaxHealth;
+
 	virtual void BeginPlay() override;
 
 	virtual void SetupPlayerInputComponent(class UInputComponent* PlayerInputComponent) override;
@@ -27,10 +51,83 @@ protected:
 
 	virtual void MoveRight(const float Value);
 
+	virtual void Evade();
+
+	void OnEvadeFinished();
+
+	virtual void Sneak();
+
+	virtual void StopSneaking();
+
+	virtual void Crouch();
+
+	virtual void UnCrouch();
+
+	/* Sole purpose is pure destruction */
+	virtual void PrimaryAttack();
+
+	/* Sad face */
+	virtual void StopPrimaryAttacking();
+
+	/* E.g Toggle alternate firing mode */
+	virtual void SecondaryAttack();
+
+	virtual void StopSecondaryAttacking();
+
+	/* E.g Throw grenades or plant mines */
+	virtual void TertiaryAttack();
+
+	virtual void StopTertiaryAttacking();
+
+	virtual void Interact();
+
+	virtual void TakeDamage(class AActor* Instigator, const int32 Amount);
+
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Movement", meta = (ClampMin = "1.0"))
+	float MaxWalkSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Movement", meta = (ClampMin = "1.0"))
+	float MaxWalkSpeedSneaking;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Movement", meta = (ClampMin = "1.0"))
+	float MaxWalkSpeedCrouched;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Weapon")
+	TSubclassOf<class AProjectileBase> ProjectileClass;
+
+	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Weapon")
+	//TSubclassOf<class AWeaponBase> WeaponClass;
+
 	AProtagonistCharacter();
 
 	class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
 
 	class UCameraComponent* GetFollowCamera() const { return Camera; }
+
+	class UAttributesComponent* GetAttributes() const { return Attributes; }
+
+	bool CanSneak() const;
+
+	bool CanCrouch() const;
+
+	bool CanEvade() const;
+
+	bool CanPrimaryAttack() const;
+
+	bool CanSecondaryAttack() const;
+
+	bool CanTertiaryAttack() const;
+
+	bool IsSneaking() const { return bSneaking; }
+
+	bool IsCrouching() const { return bCrouching; }
+
+	bool IsEvading() const { return bEvading; }
+
+	bool IsPrimaryAttacking() const { return bPrimaryAttacking; }
+
+	bool IsSecondaryAttacking() const { return bSecondaryAttacking; }
+
+	bool IsTertiaryAttacking() const { return bTertiaryAttacking; }
 };
