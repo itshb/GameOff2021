@@ -10,6 +10,12 @@ UCLASS(Abstract)
 class GAMEOFF2021_API AWeaponBase : public AActor {
 	GENERATED_BODY()
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+	TObjectPtr<USkeletalMeshComponent> Mesh;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
+	class USceneComponent* MuzzleLocation;
+
 	bool bFiring;
 
 	bool bReloading;
@@ -21,27 +27,30 @@ class GAMEOFF2021_API AWeaponBase : public AActor {
 	void OnReloadFinished();
 	
 protected:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0.0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, meta = (ClampMin = "0.0"))
 	float FireRate;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0.1"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, meta = (ClampMin = "0.1"))
 	float ReloadSpeed;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "1"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, meta = (ClampMin = "1"))
 	int32 AmmoMax;
 	
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (ClampMin = "0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, meta = (ClampMin = "0"))
 	int32 AmmoRemaining;
 	
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, meta = (ClampMin = "1"))
+	int32 MagazineSize;
+
 	int32 AmmoLoaded;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	TSubclassOf<class AProjectileBase> ProjectileClass;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	bool bSecondaryFireAvailable;
 
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, meta = (EditCondition = "bSecondaryFireAvailable", ClampMin = "0.0"))
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon, meta = (EditCondition = "bSecondaryFireAvailable", ClampMin = "0.0"))
 	float FireRateSecondary;
 
 	virtual void DoFire();
@@ -60,6 +69,8 @@ public:
 	bool CanFire() const;
 
 	bool IsFiring() const { return bFiring; }
+
+	bool CanReload() const;
 	
 	bool SecondaryFireAvailable() const { return bSecondaryFireAvailable; }
 
@@ -76,4 +87,10 @@ public:
 	int32 GetAmmoRemaining() const { return AmmoRemaining; }
 
 	int32 GetAmmoMax() const { return AmmoMax; }
+
+	class USkeletalMeshComponent* GetMesh() const { return Mesh; }
+
+	FVector GetMuzzleLocation() const { return MuzzleLocation->GetComponentLocation(); }
+	
+	void AttachTo(class AActor* ParentActor, const FName& SocketName);
 };

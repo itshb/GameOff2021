@@ -20,9 +20,6 @@ class GAMEOFF2021_API AProtagonistCharacter : public ACharacter, public IDamagea
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UAttributesComponent* Attributes;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadOnly, meta = (AllowPrivateAccess = "true"))
-	class USceneComponent* ProjectileSpawnLocation;
-
 	bool bPressedInteract;
 
 	bool bSneaking;
@@ -37,9 +34,26 @@ class GAMEOFF2021_API AProtagonistCharacter : public ACharacter, public IDamagea
 
 	bool bTertiaryAttacking;
 
+	class AWeaponBase* EquippedWeapon = nullptr;
+
 protected:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Movement", meta = (ClampMin = "1.0"))
+	float MaxWalkSpeed;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Movement", meta = (ClampMin = "1.0"))
+	float MaxWalkSpeedSneaking;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Movement", meta = (ClampMin = "1.0"))
+	float MaxWalkSpeedCrouched;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Weapon")
+	TSubclassOf<class AWeaponBase> WeaponToEquip;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Attributes", meta = (ClampMin = "1"))
 	int32 MaxHealth;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Weapon")
+	FName WeaponSocketName;
 
 	virtual void BeginPlay() override;
 
@@ -79,26 +93,15 @@ protected:
 
 	virtual void StopTertiaryAttacking();
 
+	virtual void ReloadEquippedWeapon();
+
 	virtual void Interact();
 
 	virtual void TakeDamage(class AActor* Instigator, const int32 Amount);
 
+	void EquipWeapon(class AWeaponBase* InWeapon);
+
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Movement", meta = (ClampMin = "1.0"))
-	float MaxWalkSpeed;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Movement", meta = (ClampMin = "1.0"))
-	float MaxWalkSpeedSneaking;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Movement", meta = (ClampMin = "1.0"))
-	float MaxWalkSpeedCrouched;
-
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Weapon")
-	TSubclassOf<class AProjectileBase> ProjectileClass;
-
-	//UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Weapon")
-	//TSubclassOf<class AWeaponBase> WeaponClass;
-
 	AProtagonistCharacter();
 
 	class USpringArmComponent* GetCameraBoom() const { return CameraBoom; }
@@ -106,6 +109,8 @@ public:
 	class UCameraComponent* GetFollowCamera() const { return Camera; }
 
 	class UAttributesComponent* GetAttributes() const { return Attributes; }
+
+	class AWeaponBase* GetEquippedWeapon() const { return EquippedWeapon; }
 
 	bool CanSneak() const;
 

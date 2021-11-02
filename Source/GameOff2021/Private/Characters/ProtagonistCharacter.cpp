@@ -7,7 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/AttributesComponent.h"
-#include "Components/SceneComponent.h" // move to Weapon class
+#include "Actors/Weapons/WeaponBase.h"
 
 AProtagonistCharacter::AProtagonistCharacter() {
 	PrimaryActorTick.bCanEverTick = true;
@@ -42,9 +42,6 @@ AProtagonistCharacter::AProtagonistCharacter() {
 
 	Attributes = CreateDefaultSubobject<UAttributesComponent>(TEXT("Attributes"));
 	MaxHealth = 100;
-
-	ProjectileSpawnLocation = CreateDefaultSubobject<USceneComponent>(TEXT("ProjectileSpawnLocation"));
-	ProjectileSpawnLocation->SetRelativeLocation(FVector(50.0f, 0.0f, 30.0f));
 }
 
 void AProtagonistCharacter::BeginPlay() {
@@ -79,6 +76,7 @@ void AProtagonistCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInp
 	PlayerInputComponent->BindAction("SecondaryAttack", IE_Released, this, &AProtagonistCharacter::StopSecondaryAttacking);
 	PlayerInputComponent->BindAction("TertiaryAttack", IE_Pressed, this, &AProtagonistCharacter::TertiaryAttack);
 	PlayerInputComponent->BindAction("TertiaryAttack", IE_Released, this, &AProtagonistCharacter::StopTertiaryAttacking);
+	PlayerInputComponent->BindAction("ReloadWeapon", IE_Pressed, this, &AProtagonistCharacter::ReloadEquippedWeapon);
 
 	PlayerInputComponent->BindAction("Interact", IE_Pressed, this, &AProtagonistCharacter::Interact);
 }
@@ -131,19 +129,16 @@ void AProtagonistCharacter::UnCrouch() {
 	bCrouching = false;
 }
 
-#include "Actors/Projectiles/ProjectileBase.h"
 void AProtagonistCharacter::PrimaryAttack() {
-	bPrimaryAttacking = true;
-
-	if(ProjectileClass) { // TODO: Implement Weapon class & move this into there
-		FActorSpawnParameters ActorSpawnParams;
-		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
-
-		GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, ProjectileSpawnLocation->GetComponentLocation(), GetActorRotation(), ActorSpawnParams);
+	if(EquippedWeapon) {
+		EquippedWeapon->Fire();
+		bPrimaryAttacking = true;
 	}
 }
 
 void AProtagonistCharacter::StopPrimaryAttacking() {
+	if(!bPrimaryAttacking) return;
+	EquippedWeapon->StopFiring();
 	bPrimaryAttacking = false;
 }
 
@@ -163,8 +158,22 @@ void AProtagonistCharacter::StopTertiaryAttacking() {
 	bTertiaryAttacking = false;
 }
 
+void AProtagonistCharacter::ReloadEquippedWeapon() {
+	if(!EquippedWeapon) return;
+	EquippedWeapon->Reload();
+}
+
 void AProtagonistCharacter::Interact() {
 	bPressedInteract = true;
+	EquipWeapon(Cast<AWeaponBase>(WeaponToEquip));
+}
+
+void AProtagonistCharacter::EquipWeapon(class AWeaponBase* InWeapon) {
+	if(EquippedWeapon != nullptr) EquippedWeapon->Destroy();
+	AActor* Spawned = GetWorld()->SpawnActor<AWeaponBase>(WeaponToEquip, GetMesh()->GetSocketLocation(WeaponSocketName), GetActorRotation());
+	EquippedWeapon = Cast<AWeaponBase>(Spawned);
+	Spawned->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, WeaponSocketName);
+	Spawned->SetActorRelativeRotation(FRotator(0.0f, 85.0f, 0.0f));
 }
 
 void AProtagonistCharacter::TakeDamage(class AActor* InstigatorA, const int32 Amount) {
