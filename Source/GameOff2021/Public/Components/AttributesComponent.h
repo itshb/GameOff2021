@@ -26,8 +26,10 @@ protected:
 	//virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
 
 public:
+	UPROPERTY(BlueprintAssignable)
 	FOnHealthUpdated OnHealthUpdated;
 
+	UPROPERTY(BlueprintAssignable)
 	FOnDeath OnDeath;
 
 	UAttributesComponent();
@@ -37,10 +39,13 @@ public:
 	void Heal(const int32 Amount);
 	
 	void Damage(const int32 Amount);
-
+	
+	UFUNCTION(BlueprintCallable)
 	int32 GetHealth() const { return Health; }
-
+	
+	UFUNCTION(BlueprintCallable)
 	int32 GetHealthMax() const { return HealthMax; }
 	
-	float GetHealthPercent() const { return Health / HealthMax; }
+	UFUNCTION(BlueprintCallable)
+	float GetHealthPercent() const { return static_cast<float>(Health) / HealthMax; }
 };

@@ -26,6 +26,7 @@ AWeaponBase::AWeaponBase() {
 	AmmoMax = 120;
 	AmmoRemaining = 120;
 	MagazineSize = 20;
+	AmmoLoaded = MagazineSize;
 }
 
 void AWeaponBase::Fire() {
@@ -37,7 +38,24 @@ void AWeaponBase::Fire() {
 		return;
 	}
 
-	GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &AWeaponBase::DoFire, FireRate, true);
+	GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &AWeaponBase::DoFire, FireRate, true, 0.0f);
+}
+
+void AWeaponBase::DoFire() {
+	if(ProjectileClass) {
+		FActorSpawnParameters ActorSpawnParams;
+		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+
+		GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, MuzzleLocation->GetComponentLocation(), GetAttachParentActor()->GetActorRotation(), ActorSpawnParams);
+
+		--AmmoLoaded;
+
+		if(AmmoLoaded == 0) {
+			StopFiring();
+		}
+
+		OnWeaponFired.Broadcast(AmmoLoaded);
+	}
 }
 
 void AWeaponBase::StopFiring() {
@@ -53,6 +71,15 @@ void AWeaponBase::Reload() {
 	bReloading = true;
 
 	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &AWeaponBase::OnReloadFinished, ReloadSpeed, false);
+
+	OnReloadStarted.Broadcast(ReloadSpeed);
+}
+
+void AWeaponBase::StopReloading() {
+	if(!bReloading) return;
+	bReloading = false;
+	GetWorld()->GetTimerManager().ClearTimer(ReloadTimerHandle);
+	OnReloadCancelled.Broadcast();
 }
 
 void AWeaponBase::OnReloadFinished() {
@@ -63,28 +90,21 @@ void AWeaponBase::OnReloadFinished() {
 		AmmoRemaining = 0;
 	}
 	else {
-		AmmoLoaded = 20;
-		AmmoRemaining -= 20;
+		AmmoRemaining -= (MagazineSize - AmmoLoaded);
+		AmmoLoaded = MagazineSize;
 	}
+
+	OnAmmoUpdated.Broadcast(AmmoLoaded, AmmoRemaining);
 }
 
-void AWeaponBase::DoFire() {
-	if(ProjectileClass) {
-		FActorSpawnParameters ActorSpawnParams;
-		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
+void AWeaponBase::AddAmmo(const int32 Value) {
+	if(AmmoRemaining == AmmoMax || Value == 0) return;
 
-		GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, MuzzleLocation->GetComponentLocation(), GetAttachParentActor()->GetActorRotation(), ActorSpawnParams);
+	(Value < 0) ? AmmoRemaining -= Value : AmmoRemaining += Value;
 
-		--AmmoLoaded;
+	if(AmmoRemaining > AmmoMax) AmmoRemaining = AmmoMax;
 
-		if(AmmoLoaded == 0) {
-			StopFiring();
-		}
-	}
-}
-
-void AWeaponBase::DoStopFiring() {
-
+	OnAmmoUpdated.Broadcast(AmmoLoaded, AmmoRemaining);
 }
 
 bool AWeaponBase::CanFire() const {
@@ -92,7 +112,7 @@ bool AWeaponBase::CanFire() const {
 }
 
 bool AWeaponBase::CanReload() const {
-	return (!bReloading && AmmoRemaining > 0);
+	return (!bReloading && AmmoRemaining > 0 && AmmoLoaded != MagazineSize);
 }
 
 int32 AWeaponBase::GetDamage() const {

@@ -6,6 +6,11 @@
 #include "GameFramework/Actor.h"
 #include "WeaponBase.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponFired, int32, NewAmmoLoaded);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAmmoUpdated, int32, NewAmmoLoaded, int32, NewAmmoRemaining);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReloadStarted, float, Duration);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnReloadCancelled);
+
 UCLASS(Abstract)
 class GAMEOFF2021_API AWeaponBase : public AActor {
 	GENERATED_BODY()
@@ -55,9 +60,19 @@ protected:
 
 	virtual void DoFire();
 
-	virtual void DoStopFiring();
-
 public:
+	UPROPERTY(BlueprintAssignable)
+	FOnWeaponFired OnWeaponFired;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnAmmoUpdated OnAmmoUpdated;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnReloadStarted OnReloadStarted;
+
+	UPROPERTY(BlueprintAssignable)
+	FOnReloadCancelled OnReloadCancelled;
+
 	AWeaponBase();
 
 	void Fire();
@@ -66,13 +81,19 @@ public:
 
 	void Reload();
 
+	void StopReloading();
+
 	bool CanFire() const;
 
 	bool IsFiring() const { return bFiring; }
 
+	bool IsReloading() const { return bReloading; }
+
 	bool CanReload() const;
 	
 	bool SecondaryFireAvailable() const { return bSecondaryFireAvailable; }
+
+	void AddAmmo(const int32 Value);
 
 	UFUNCTION(BlueprintCallable)
 	float GetFireRate() const { return FireRate; }

@@ -7,6 +7,8 @@
 #include "Interfaces/DamageableInterface.h"
 #include "ProtagonistCharacter.generated.h"
 
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquippedWeaponChanged, class AWeaponBase*, NewEquippedWeapon);
+
 UCLASS()
 class GAMEOFF2021_API AProtagonistCharacter : public ACharacter, public IDamageableInterface {
 	GENERATED_BODY()
@@ -110,7 +112,11 @@ public:
 
 	class UAttributesComponent* GetAttributes() const { return Attributes; }
 
+	UFUNCTION(BlueprintCallable)
 	class AWeaponBase* GetEquippedWeapon() const { return EquippedWeapon; }
+
+	UPROPERTY(BlueprintAssignable)
+	FOnEquippedWeaponChanged OnWeaponChanged;
 
 	bool CanSneak() const;
 

@@ -103,6 +103,10 @@ void AProtagonistCharacter::MoveRight(const float Value) {
 
 void AProtagonistCharacter::Evade() {
 	bEvading = true;
+
+	if(EquippedWeapon) {
+		if(EquippedWeapon->IsReloading()) EquippedWeapon->StopReloading();
+	}
 }
 
 void AProtagonistCharacter::OnEvadeFinished() {
@@ -144,6 +148,7 @@ void AProtagonistCharacter::StopPrimaryAttacking() {
 
 void AProtagonistCharacter::SecondaryAttack() {
 	bSecondaryAttacking = true;
+	NotifyDamage(this, this, 10);
 }
 
 void AProtagonistCharacter::StopSecondaryAttacking() {
@@ -170,10 +175,15 @@ void AProtagonistCharacter::Interact() {
 
 void AProtagonistCharacter::EquipWeapon(class AWeaponBase* InWeapon) {
 	if(EquippedWeapon != nullptr) EquippedWeapon->Destroy();
+
 	AActor* Spawned = GetWorld()->SpawnActor<AWeaponBase>(WeaponToEquip, GetMesh()->GetSocketLocation(WeaponSocketName), GetActorRotation());
+
 	EquippedWeapon = Cast<AWeaponBase>(Spawned);
+
 	Spawned->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, WeaponSocketName);
 	Spawned->SetActorRelativeRotation(FRotator(0.0f, 85.0f, 0.0f));
+
+	OnWeaponChanged.Broadcast(EquippedWeapon);
 }
 
 void AProtagonistCharacter::TakeDamage(class AActor* InstigatorA, const int32 Amount) {

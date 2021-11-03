@@ -4,5 +4,8 @@
 
 ## TODO NEXT
 - [x] Basic weapon functionality
-- [ ] Basic UI
+- [x] Basic UI
 - [ ] Basic enemy
+- [ ] Implement Gas + Explosive Grenades
+- [ ] Create Mannequin animations
+- [ ] Fix Healthbar bug
