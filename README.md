@@ -8,4 +8,5 @@
 - [ ] Basic enemy
 - [ ] Implement Gas + Explosive Grenades
 - [ ] Create Mannequin animations
-- [ ] Fix Healthbar bug
+- [x] Fix Healthbar bug
+- [ ] Implement health increase visualization
