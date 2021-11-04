@@ -6,7 +6,7 @@
 #include "GameFramework/Actor.h"
 #include "Explosive.generated.h"
 
-UCLASS()
+UCLASS(Abstract)
 class GAMEOFF2021_API AExplosive : public AActor {
 	GENERATED_BODY()
 
@@ -48,6 +48,7 @@ protected:
 	
 	virtual void Tick(float DeltaTime) override;
 
+	UFUNCTION()
 	virtual void OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 
 public:

@@ -25,6 +25,8 @@ AExplosive::AExplosive() {
 	ExplosionCollider->SetGenerateOverlapEvents(false);
 	ExplosionCollider->SetCanEverAffectNavigation(false);
 	ExplosionCollider->OnComponentBeginOverlap.AddDynamic(this, &AExplosive::OnOverlapBegin);
+
+	Damage = 20;
 }
 
 void AExplosive::Tick(float DeltaTime) {
@@ -61,8 +63,10 @@ void AExplosive::DoExplode() {
 	ExplosionCollider->SetGenerateOverlapEvents(true);
 	bExploding = true;
 
-	if(ExplosionVFX->IsValid()) {
-		UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ExplosionVFX, GetActorLocation(), FRotator(0.0f, 0.0f, 0.0f)); // Trust in bAutoDestroy we do ..for now
+	if(ExplosionVFX) {
+		if(ExplosionVFX->IsValid()) {
+			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ExplosionVFX, GetActorLocation(), FRotator(0.0f, 0.0f, 0.0f)); // Trust in bAutoDestroy we do ..for now
+		}
 	}
 }
 

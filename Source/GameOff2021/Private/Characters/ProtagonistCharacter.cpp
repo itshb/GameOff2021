@@ -8,6 +8,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/AttributesComponent.h"
 #include "Actors/Weapons/Weapon.h"
+#include "Components/ThrowComponent.h"
+#include "Actors/Explosives/Grenade.h"
 
 AProtagonistCharacter::AProtagonistCharacter() {
 	PrimaryActorTick.bCanEverTick = true;
@@ -42,6 +44,8 @@ AProtagonistCharacter::AProtagonistCharacter() {
 
 	Attributes = CreateDefaultSubobject<UAttributesComponent>(TEXT("Attributes"));
 	MaxHealth = 100;
+
+	Throw = CreateDefaultSubobject<UThrowComponent>(TEXT("Throw Component"));
 }
 
 void AProtagonistCharacter::BeginPlay() {
@@ -157,10 +161,16 @@ void AProtagonistCharacter::StopSecondaryAttacking() {
 
 void AProtagonistCharacter::TertiaryAttack() {
 	bTertiaryAttacking = true;
+
+	EquippedGrenade = Cast<AGrenade>(GrenadeToEquip);
+	Throw->DisplayTrajectory(true);
 }
 
 void AProtagonistCharacter::StopTertiaryAttacking() {
 	bTertiaryAttacking = false;
+
+	Throw->DisplayTrajectory(false);
+	Throw->ThrowGrenade(GrenadeToEquip);
 }
 
 void AProtagonistCharacter::ReloadEquippedWeapon() {

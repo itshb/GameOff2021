@@ -19,8 +19,11 @@ class GAMEOFF2021_API AProtagonistCharacter : public ACharacter, public IDamagea
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
 	class UCameraComponent* Camera;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Camera, meta = (AllowPrivateAccess = "true"))
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attributes, meta = (AllowPrivateAccess = "true"))
 	class UAttributesComponent* Attributes;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Throw, meta = (AllowPrivateAccess = "true"))
+	class UThrowComponent* Throw;
 
 	bool bPressedInteract;
 
@@ -36,7 +39,9 @@ class GAMEOFF2021_API AProtagonistCharacter : public ACharacter, public IDamagea
 
 	bool bTertiaryAttacking;
 
-	class AWeapon* EquippedWeapon = nullptr;
+	class AWeapon* EquippedWeapon;
+
+	class AGrenade* EquippedGrenade;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Movement", meta = (ClampMin = "1.0"))
@@ -50,6 +55,9 @@ protected:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Weapon")
 	TSubclassOf<class AWeapon> WeaponToEquip;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Grenade")
+	TSubclassOf<class AGrenade> GrenadeToEquip;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Attributes", meta = (ClampMin = "1"))
 	int32 MaxHealth;
