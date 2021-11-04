@@ -7,7 +7,7 @@
 #include "Camera/CameraComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/AttributesComponent.h"
-#include "Actors/Weapons/WeaponBase.h"
+#include "Actors/Weapons/Weapon.h"
 
 AProtagonistCharacter::AProtagonistCharacter() {
 	PrimaryActorTick.bCanEverTick = true;
@@ -170,15 +170,15 @@ void AProtagonistCharacter::ReloadEquippedWeapon() {
 
 void AProtagonistCharacter::Interact() {
 	bPressedInteract = true;
-	EquipWeapon(Cast<AWeaponBase>(WeaponToEquip));
+	EquipWeapon(Cast<AWeapon>(WeaponToEquip));
 }
 
-void AProtagonistCharacter::EquipWeapon(class AWeaponBase* InWeapon) {
+void AProtagonistCharacter::EquipWeapon(class AWeapon* InWeapon) {
 	if(EquippedWeapon != nullptr) EquippedWeapon->Destroy();
 
-	AActor* Spawned = GetWorld()->SpawnActor<AWeaponBase>(WeaponToEquip, GetMesh()->GetSocketLocation(WeaponSocketName), GetActorRotation());
+	AActor* Spawned = GetWorld()->SpawnActor<AWeapon>(WeaponToEquip, GetMesh()->GetSocketLocation(WeaponSocketName), GetActorRotation());
 
-	EquippedWeapon = Cast<AWeaponBase>(Spawned);
+	EquippedWeapon = Cast<AWeapon>(Spawned);
 
 	Spawned->AttachToComponent(GetMesh(), FAttachmentTransformRules::KeepWorldTransform, WeaponSocketName);
 	Spawned->SetActorRelativeRotation(FRotator(0.0f, 85.0f, 0.0f));

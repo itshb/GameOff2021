@@ -4,7 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "WeaponBase.generated.h"
+#include "Weapon.generated.h"
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnWeaponFired, int32, NewAmmoLoaded);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FOnAmmoUpdated, int32, NewAmmoLoaded, int32, NewAmmoRemaining);
@@ -12,7 +12,7 @@ DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnReloadStarted, float, Duration);
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnReloadCancelled);
 
 UCLASS(Abstract)
-class GAMEOFF2021_API AWeaponBase : public AActor {
+class GAMEOFF2021_API AWeapon : public AActor {
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Weapon, meta = (AllowPrivateAccess = "true"))
@@ -50,7 +50,7 @@ protected:
 	int32 AmmoLoaded;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
-	TSubclassOf<class AProjectileBase> ProjectileClass;
+	TSubclassOf<class AProjectile> ProjectileClass;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Weapon)
 	bool bSecondaryFireAvailable;
@@ -73,7 +73,7 @@ public:
 	UPROPERTY(BlueprintAssignable)
 	FOnReloadCancelled OnReloadCancelled;
 
-	AWeaponBase();
+	AWeapon();
 
 	void Fire();
 

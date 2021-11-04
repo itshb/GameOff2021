@@ -1,12 +1,12 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actors/Weapons/WeaponBase.h"
-#include "Actors/Projectiles/ProjectileBase.h"
+#include "Actors/Weapons/Weapon.h"
+#include "Actors/Projectiles/Projectile.h"
 #include "Components/SceneComponent.h"
 #include "Components/SkeletalMeshComponent.h"
 
-AWeaponBase::AWeaponBase() {
+AWeapon::AWeapon() {
 	PrimaryActorTick.bCanEverTick = false;
 	PrimaryActorTick.bStartWithTickEnabled = false;
 
@@ -29,7 +29,7 @@ AWeaponBase::AWeaponBase() {
 	AmmoLoaded = MagazineSize;
 }
 
-void AWeaponBase::Fire() {
+void AWeapon::Fire() {
 	if(!CanFire()) return;
 	bFiring = true;
 
@@ -38,15 +38,15 @@ void AWeaponBase::Fire() {
 		return;
 	}
 
-	GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &AWeaponBase::DoFire, FireRate, true, 0.0f);
+	GetWorld()->GetTimerManager().SetTimer(FireTimerHandle, this, &AWeapon::DoFire, FireRate, true, 0.0f);
 }
 
-void AWeaponBase::DoFire() {
+void AWeapon::DoFire() {
 	if(ProjectileClass) {
 		FActorSpawnParameters ActorSpawnParams;
 		ActorSpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AdjustIfPossibleButDontSpawnIfColliding;
 
-		GetWorld()->SpawnActor<AProjectileBase>(ProjectileClass, MuzzleLocation->GetComponentLocation(), GetAttachParentActor()->GetActorRotation(), ActorSpawnParams);
+		GetWorld()->SpawnActor<AProjectile>(ProjectileClass, MuzzleLocation->GetComponentLocation(), GetAttachParentActor()->GetActorRotation(), ActorSpawnParams);
 
 		--AmmoLoaded;
 
@@ -58,31 +58,31 @@ void AWeaponBase::DoFire() {
 	}
 }
 
-void AWeaponBase::StopFiring() {
+void AWeapon::StopFiring() {
 	if(!bFiring) return;
 	bFiring = false;
 
 	GetWorld()->GetTimerManager().ClearTimer(FireTimerHandle);
 }
 
-void AWeaponBase::Reload() {
+void AWeapon::Reload() {
 	if(!CanReload()) return;
 	if(bFiring) StopFiring();
 	bReloading = true;
 
-	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &AWeaponBase::OnReloadFinished, ReloadSpeed, false);
+	GetWorld()->GetTimerManager().SetTimer(ReloadTimerHandle, this, &AWeapon::OnReloadFinished, ReloadSpeed, false);
 
 	OnReloadStarted.Broadcast(ReloadSpeed);
 }
 
-void AWeaponBase::StopReloading() {
+void AWeapon::StopReloading() {
 	if(!bReloading) return;
 	bReloading = false;
 	GetWorld()->GetTimerManager().ClearTimer(ReloadTimerHandle);
 	OnReloadCancelled.Broadcast();
 }
 
-void AWeaponBase::OnReloadFinished() {
+void AWeapon::OnReloadFinished() {
 	bReloading = false;
 
 	if(AmmoRemaining < MagazineSize) {
@@ -97,7 +97,7 @@ void AWeaponBase::OnReloadFinished() {
 	OnAmmoUpdated.Broadcast(AmmoLoaded, AmmoRemaining);
 }
 
-void AWeaponBase::AddAmmo(const int32 Value) {
+void AWeapon::AddAmmo(const int32 Value) {
 	if(AmmoRemaining == AmmoMax || Value == 0) return;
 
 	(Value < 0) ? AmmoRemaining -= Value : AmmoRemaining += Value;
@@ -107,18 +107,18 @@ void AWeaponBase::AddAmmo(const int32 Value) {
 	OnAmmoUpdated.Broadcast(AmmoLoaded, AmmoRemaining);
 }
 
-bool AWeaponBase::CanFire() const {
+bool AWeapon::CanFire() const {
 	return (!bReloading && !bFiring && AmmoLoaded > 0);
 }
 
-bool AWeaponBase::CanReload() const {
+bool AWeapon::CanReload() const {
 	return (!bReloading && AmmoRemaining > 0 && AmmoLoaded != MagazineSize);
 }
 
-int32 AWeaponBase::GetDamage() const {
-	return Cast<AProjectileBase>(ProjectileClass)->GetDamage();
+int32 AWeapon::GetDamage() const {
+	return Cast<AProjectile>(ProjectileClass)->GetDamage();
 }
 
-void AWeaponBase::AttachTo(class AActor* ParentActor, const FName& SocketName) {
+void AWeapon::AttachTo(class AActor* ParentActor, const FName& SocketName) {
 	AttachToActor(ParentActor, FAttachmentTransformRules::KeepRelativeTransform);
 }

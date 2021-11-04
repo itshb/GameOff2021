@@ -1,20 +1,20 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
 
-#include "Actors/Projectiles/ProjectileBase.h"
+#include "Actors/Projectiles/Projectile.h"
 #include "GameFramework/ProjectileMovementComponent.h"
 #include "Components/SphereComponent.h"
 #include "Interfaces/DamageableInterface.h"
 
-AProjectileBase::AProjectileBase() {
+AProjectile::AProjectile() {
 	PrimaryActorTick.bCanEverTick = true;
 
 	Collider = CreateDefaultSubobject<USphereComponent>(TEXT("Collider"));
 	RootComponent = Collider;
 	Collider->InitSphereRadius(5.0f);
 	Collider->BodyInstance.SetCollisionProfileName("Projectile");
-	Collider->OnComponentHit.AddDynamic(this, &AProjectileBase::OnHit);
-	Collider->OnComponentBeginOverlap.AddDynamic(this, &AProjectileBase::OnOverlapBegin);
+	Collider->OnComponentHit.AddDynamic(this, &AProjectile::OnHit);
+	Collider->OnComponentBeginOverlap.AddDynamic(this, &AProjectile::OnOverlapBegin);
 	Collider->SetWalkableSlopeOverride(FWalkableSlopeOverride(WalkableSlope_Unwalkable, 0.0f));
 	Collider->CanCharacterStepUpOn = ECB_No;
 	Collider->SetEnableGravity(false);
@@ -32,12 +32,12 @@ AProjectileBase::AProjectileBase() {
 	Damage = 1;
 }
 
-void AProjectileBase::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
+void AProjectile::OnHit(UPrimitiveComponent* HitComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, FVector NormalImpulse, const FHitResult& Hit) {
 	Destroy();
 	OnDestroy();
 }
 
-void AProjectileBase::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
+void AProjectile::OnOverlapBegin(class UPrimitiveComponent* OverlappedComp, class AActor* OtherActor, class UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult) {
 	const auto Damageable = Cast<IDamageableInterface>(OtherActor);
 	if(Damageable) {
 		Damageable->NotifyDamage(this, OtherActor, Damage);

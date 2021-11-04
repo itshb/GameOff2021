@@ -4,10 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
-#include "ProjectileBase.generated.h"
+#include "Projectile.generated.h"
 
 UCLASS(Abstract)
-class GAMEOFF2021_API AProjectileBase : public AActor {
+class GAMEOFF2021_API AProjectile : public AActor {
 	GENERATED_BODY()
 
 	UPROPERTY(VisibleDefaultsOnly, Category = Projectile)
@@ -32,7 +32,7 @@ protected:
 	virtual void OnDestroy() {}
 	
 public:
-	AProjectileBase();
+	AProjectile();
 
 	class USphereComponent* GetCollider() const { return Collider; }
 	

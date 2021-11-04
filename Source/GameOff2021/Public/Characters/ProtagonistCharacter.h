@@ -7,7 +7,7 @@
 #include "Interfaces/DamageableInterface.h"
 #include "ProtagonistCharacter.generated.h"
 
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquippedWeaponChanged, class AWeaponBase*, NewEquippedWeapon);
+DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnEquippedWeaponChanged, class AWeapon*, NewEquippedWeapon);
 
 UCLASS()
 class GAMEOFF2021_API AProtagonistCharacter : public ACharacter, public IDamageableInterface {
@@ -36,7 +36,7 @@ class GAMEOFF2021_API AProtagonistCharacter : public ACharacter, public IDamagea
 
 	bool bTertiaryAttacking;
 
-	class AWeaponBase* EquippedWeapon = nullptr;
+	class AWeapon* EquippedWeapon = nullptr;
 
 protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Movement", meta = (ClampMin = "1.0"))
@@ -49,7 +49,7 @@ protected:
 	float MaxWalkSpeedCrouched;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Weapon")
-	TSubclassOf<class AWeaponBase> WeaponToEquip;
+	TSubclassOf<class AWeapon> WeaponToEquip;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Protagonist|Attributes", meta = (ClampMin = "1"))
 	int32 MaxHealth;
@@ -101,7 +101,7 @@ protected:
 
 	virtual void TakeDamage(class AActor* Instigator, const int32 Amount);
 
-	void EquipWeapon(class AWeaponBase* InWeapon);
+	void EquipWeapon(class AWeapon* InWeapon);
 
 public:
 	AProtagonistCharacter();
@@ -113,7 +113,7 @@ public:
 	class UAttributesComponent* GetAttributes() const { return Attributes; }
 
 	UFUNCTION(BlueprintCallable)
-	class AWeaponBase* GetEquippedWeapon() const { return EquippedWeapon; }
+	class AWeapon* GetEquippedWeapon() const { return EquippedWeapon; }
 
 	UPROPERTY(BlueprintAssignable)
 	FOnEquippedWeaponChanged OnWeaponChanged;
