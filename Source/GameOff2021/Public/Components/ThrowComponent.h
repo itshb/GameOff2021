@@ -9,9 +9,13 @@
 /**
  * Component used for throwing other actors, E.g Grenades & Rocks
  */
-UCLASS( ClassGroup=(Custom), meta=(BlueprintSpawnableComponent) )
-class GAMEOFF2021_API UThrowComponent final : public UActorComponent {
+UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
+class GAMEOFF2021_API UThrowComponent final : public UActorComponent{
 	GENERATED_BODY()
+
+	bool bRenderTrajectory;
+
+	void RenderTrajectory() const;
 
 protected:
 	virtual void BeginPlay() override;

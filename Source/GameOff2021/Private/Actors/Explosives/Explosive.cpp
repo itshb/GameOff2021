@@ -68,6 +68,8 @@ void AExplosive::DoExplode() {
 			UNiagaraFunctionLibrary::SpawnSystemAtLocation(this, ExplosionVFX, GetActorLocation(), FRotator(0.0f, 0.0f, 0.0f)); // Trust in bAutoDestroy we do ..for now
 		}
 	}
+
+	Destroy();
 }
 
 float AExplosive::GetRadius() const {

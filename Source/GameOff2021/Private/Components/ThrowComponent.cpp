@@ -4,6 +4,8 @@
 #include "Components/ThrowComponent.h"
 #include "Actors/Explosives/Grenade.h"
 #include "Components/PrimitiveComponent.h"
+#include "Kismet/GameplayStatics.h"
+#include "DrawDebugHelpers.h"
 
 UThrowComponent::UThrowComponent() {
 	PrimaryComponentTick.bCanEverTick = true;
@@ -17,10 +19,24 @@ void UThrowComponent::BeginPlay() {
 
 void UThrowComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
+
+	if(bRenderTrajectory) RenderTrajectory();
 }
 
 void UThrowComponent::DisplayTrajectory(bool bState) {
 	// TODO: Implement
+	bRenderTrajectory = bState;
+	if(!bState) return;
+}
+
+void UThrowComponent::RenderTrajectory() const {
+	FPredictProjectilePathParams Params = FPredictProjectilePathParams(1.0f, GetOwner()->GetActorLocation(), Velocity(), 1.0f);
+	FPredictProjectilePathResult Result;
+
+	UGameplayStatics::PredictProjectilePath(this, Params, Result);
+	//for(const auto& Segment : Result.PathData) {
+		//DrawDebugBox(GetWorld(), Segment.Location, FVector(2.0f, 2.0f, 2.0f), FColor::Purple, false, 5.0f);
+	//}
 }
 
 void UThrowComponent::ThrowGrenade(TSubclassOf<class AGrenade> Grenade) {
