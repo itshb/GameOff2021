@@ -10,12 +10,12 @@
  * Component used for throwing other actors, E.g Grenades & Rocks
  */
 UCLASS(ClassGroup = (Custom), meta = (BlueprintSpawnableComponent))
-class GAMEOFF2021_API UThrowComponent final : public UActorComponent{
+class GAMEOFF2021_API UThrowComponent final : public UActorComponent {
 	GENERATED_BODY()
 
-	bool bRenderTrajectory;
+	class USplineComponent* Spline;
 
-	void RenderTrajectory() const;
+	TArray<class USplineMeshComponent*> Meshes;
 
 protected:
 	virtual void BeginPlay() override;
@@ -27,6 +27,12 @@ protected:
 public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Throw, meta = (ClampMin = "1.0", ClampMax = "2.0"))
 	float ForceMultiplier;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Throw)
+	class UStaticMesh* Mesh;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Throw)
+	class UMaterialInterface* Material;
 
 	UThrowComponent();
 
