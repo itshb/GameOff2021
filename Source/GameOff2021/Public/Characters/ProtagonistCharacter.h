@@ -144,6 +144,9 @@ public:
 
 	bool IsEvading() const { return bEvading; }
 
+	UFUNCTION(BlueprintCallable)
+	bool IsArmed() const { return (EquippedWeapon != nullptr); }
+
 	bool IsPrimaryAttacking() const { return bPrimaryAttacking; }
 
 	bool IsSecondaryAttacking() const { return bSecondaryAttacking; }

@@ -25,6 +25,9 @@ protected:
 	FVector Velocity() const;
 
 public:
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Throw)
+	class USceneComponent* LaunchPoint;
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Throw, meta = (ClampMin = "1.0", ClampMax = "2.0"))
 	float ForceMultiplier;
 

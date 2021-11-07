@@ -63,7 +63,7 @@ void UThrowComponent::DisplayTrajectory(bool bState) {
 			const FVector StartPoint = Spline->GetLocationAtSplinePoint(i, ESplineCoordinateSpace::Local);
 			const FVector EndPoint = Spline->GetLocationAtSplinePoint(i + 1, ESplineCoordinateSpace::Local);
 			const FVector StartTangent = Spline->GetTangentAtSplinePoint(i, ESplineCoordinateSpace::Local);
-			const FVector EndTangent = Spline->GetTangentAtSplinePoint(i + 1, ESplineCoordinateSpace::Local);	
+			const FVector EndTangent = Spline->GetTangentAtSplinePoint(i + 1, ESplineCoordinateSpace::Local);
 
 			SplineMesh->SetStartAndEnd(StartPoint, StartTangent, EndPoint, EndTangent);
 		}
