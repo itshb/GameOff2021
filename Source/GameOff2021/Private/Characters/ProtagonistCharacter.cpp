@@ -8,8 +8,8 @@
 #include "GameFramework/SpringArmComponent.h"
 #include "Components/AttributesComponent.h"
 #include "Actors/Weapons/Weapon.h"
-#include "Components/ThrowComponent.h"
-#include "Actors/Explosives/Grenade.h"
+//#include "Components/ThrowComponent.h"
+//#include "Actors/Explosives/Grenade.h"
 
 AProtagonistCharacter::AProtagonistCharacter() {
 	PrimaryActorTick.bCanEverTick = true;
@@ -26,6 +26,7 @@ AProtagonistCharacter::AProtagonistCharacter() {
 	CameraBoom->bEnableCameraLag = true;
 	CameraBoom->CameraLagSpeed = 6.5f;
 	CameraBoom->CameraLagMaxDistance = 100.0f;
+	CameraBoom->bUsePawnControlRotation = true;
 
 	Camera = CreateDefaultSubobject<UCameraComponent>(TEXT("Camera"));
 	Camera->SetupAttachment(CameraBoom, USpringArmComponent::SocketName);
@@ -45,7 +46,7 @@ AProtagonistCharacter::AProtagonistCharacter() {
 	Attributes = CreateDefaultSubobject<UAttributesComponent>(TEXT("Attributes"));
 	MaxHealth = 100;
 
-	Throw = CreateDefaultSubobject<UThrowComponent>(TEXT("Throw Component"));
+	//Throw = CreateDefaultSubobject<UThrowComponent>(TEXT("Throw Component"));
 }
 
 void AProtagonistCharacter::BeginPlay() {
@@ -105,12 +106,15 @@ void AProtagonistCharacter::MoveRight(const float Value) {
 	}
 }
 
-void AProtagonistCharacter::Evade() {
+void AProtagonistCharacter::Evade() { // TODO: Create Evade animation
 	bEvading = true;
 
 	if(EquippedWeapon) {
 		if(EquippedWeapon->IsReloading()) EquippedWeapon->StopReloading();
 	}
+
+	GetCharacterMovement()->AddImpulse(FVector(GetLastMovementInputVector() * FVector(5000.0f, 5000.0f, 0.0f)), true); // Teleport as placeholder until animation exists
+	OnEvadeFinished(); // Trigger this after animation finished playing
 }
 
 void AProtagonistCharacter::OnEvadeFinished() {
@@ -162,15 +166,15 @@ void AProtagonistCharacter::StopSecondaryAttacking() {
 void AProtagonistCharacter::TertiaryAttack() {
 	bTertiaryAttacking = true;
 
-	EquippedGrenade = Cast<AGrenade>(GrenadeToEquip);
-	Throw->DisplayTrajectory(true);
+	//EquippedGrenade = Cast<AGrenade>(GrenadeToEquip);
+	//Throw->DisplayTrajectory(true);
 }
 
 void AProtagonistCharacter::StopTertiaryAttacking() {
 	bTertiaryAttacking = false;
 
-	Throw->DisplayTrajectory(false);
-	Throw->ThrowGrenade(GrenadeToEquip);
+	//Throw->DisplayTrajectory(false);
+	//Throw->ThrowGrenade(GrenadeToEquip);
 }
 
 void AProtagonistCharacter::ReloadEquippedWeapon() {

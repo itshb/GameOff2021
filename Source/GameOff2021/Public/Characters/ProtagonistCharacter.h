@@ -22,8 +22,8 @@ class GAMEOFF2021_API AProtagonistCharacter : public ACharacter, public IDamagea
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Attributes, meta = (AllowPrivateAccess = "true"))
 	class UAttributesComponent* Attributes;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Throw, meta = (AllowPrivateAccess = "true"))
-	class UThrowComponent* Throw;
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Throw, meta = (AllowPrivateAccess = "true"))
+	//class UThrowComponent* Throw;
 
 	bool bPressedInteract;
 

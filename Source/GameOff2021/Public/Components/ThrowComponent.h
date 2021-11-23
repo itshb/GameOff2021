@@ -15,19 +15,19 @@ class GAMEOFF2021_API UThrowComponent final : public UActorComponent {
 
 	class USplineComponent* Spline;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = Throw, meta = (AllowPrivateAccess = "true"))
+	class USceneComponent* LaunchPoint;
+
 	TArray<class USplineMeshComponent*> Meshes;
+
+	FVector Velocity() const;
+
+	void CalculateTrajectory();
 
 protected:
 	virtual void BeginPlay() override;
 
-	virtual void TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction) override;
-
-	FVector Velocity() const;
-
 public:
-	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Throw)
-	class USceneComponent* LaunchPoint;
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = Throw, meta = (ClampMin = "1.0", ClampMax = "2.0"))
 	float ForceMultiplier;
 
@@ -40,6 +40,8 @@ public:
 	UThrowComponent();
 
 	void DisplayTrajectory(bool bState);
+
+	void UpdateForceMultiplier(const float Value);
 
 	void ThrowGrenade(TSubclassOf<class AGrenade> Grenade);
 };
